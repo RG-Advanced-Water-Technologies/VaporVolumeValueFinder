@@ -48,19 +48,19 @@ class XyzDataFile:
     Methods:
         __repr__(self): Returns a string representation of the XyzDataFile object.
     """
-    def __init__():
+    def __init__(self, filename, type_of_file, x_var, y_var, z_var, x_unit, y_unit, z_unit, xdata, ydata, zdata):
         # Initialize instance variables with default values
-        self.filename = str(filename)
-        self.type_of_file = str(type_of_file)
-        self.x_var = str(x_var)
-        self.y_var = str(y_var)
-        self.z_var = str(z_var)
-        self.x_unit = str(x_unit)
-        self.y_unit = str(y_unit)
-        self.z_unit = str(z_unit)
-        self.xdata = list(xdata)
-        self.ydata = list(ydata)
-        self.zdata = list(zdata)
+        self.filename = filename
+        self.type_of_file = type_of_file
+        self.x_var = x_var
+        self.y_var = y_var
+        self.z_var = z_var
+        self.x_unit = x_unit
+        self.y_unit = y_unit
+        self.z_unit = z_unit
+        self.xdata = xdata
+        self.ydata = ydata
+        self.zdata = zdata
 
     def __repr__(self):
         return f"XyzDataFile(filename='{self.filename}', type_of_file='{self.type_of_file}', " \
@@ -71,12 +71,12 @@ class XyzDataFile:
     # Setter methods
     def set_filename(self, filename):
         # Set the filename attribute with the provided value
-        self.filename = str(filename)
+        self.filename = filename
 
     # Other setter methods follow a similar pattern
 
 class OUfile_Parser(XyzDataFile):
-    def __init__(self, filename, type_of_file, x_var, y_var, z_var, x_unit, y_unit, z_unit, xdata, ydata, zdata):
+    def __init__(self, filename, type_of_file, x_var, y_var, z_var, x_unit, y_unit, z_unit, xdata, ydata, zdata, file_path):
         # Call the parent class constructor to initialize inherited attributes
         super().__init__(filename, type_of_file, x_var, y_var, z_var, x_unit, y_unit, z_unit, xdata, ydata, zdata)
         self.file_path = None
@@ -202,7 +202,7 @@ def interplot_xy_values(title, xLabel, yLabel, x_data, y_data, peaks):
 #================ TESTING SECTION ============================================================================
 if __name__ == "__main__":
     path = r"C:\Users\mi43qid\Documents\GitHub\GitHub_ThWIC_autoqspr\VaporVolumeValueFinder\unittest\2_2_2_2_4_10000-mt_volav.ou"
-    experiment = OUfile_Parser()
+    #experiment = OUfile_Parser()
     print("one")
-    experiment.read_datafile(filepath=path)
+   # experiment.read_datafile(filepath=path)
     print("two")
