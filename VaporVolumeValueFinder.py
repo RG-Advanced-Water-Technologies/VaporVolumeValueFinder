@@ -1,39 +1,134 @@
+# -*- coding: utf-8 -*-
+#!/usr/bin/env python3
+
+"""
+VaporVolumeFinder (V3F) - v1.0.0 Build 0001
+
+Name: VaporVolumeFinder.py
+Authors: Christian Beringer, Westdale94
+Product Owner: BaconBeaver
+Date: July 31, 2023
+
+Created for usage inside "UltraStaRK" - a project of Thuringia Water Innovation Cluster (ThWIC)
+For mor information visit: https://www.thwic.uni-jena.de/projekte/ultrastark
+
+These script is licenced unter Mozilla Public Licence v2.0
+
+Description:
+
+"""
+
+import re
+import os
+from dataclasses import dataclass
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.signal import find_peaks
 import plotly.graph_objects as go
 
-class xyDataFile:
+class XyzDataFile:
+    """
+        Represents a data file containing XYZ data.
+
+        This class is designed to store and manipulate data from an XYZ data file. It provides attributes to store the
+        filename, type of file, variable names, units, and data points for the X, Y, and Z axes.
+
+        Attributes:
+            filename (str): The name of the data file.
+            type_of_file (str): The type of the data file (e.g., 'text', 'csv', 'binary').
+            x_var (str): The name of the variable associated with the X-axis data.
+            y_var (str): The name of the variable associated with the Y-axis data.
+            z_var (str): The name of the variable associated with the Z-axis data.
+            x_unit (str): The unit of measurement for the X-axis data.
+            y_unit (str): The unit of measurement for the Y-axis data.
+            z_unit (str): The unit of measurement for the Z-axis data.
+            xdata (list): A list of numerical values representing data points along the X-axis.
+            ydata (list): A list of numerical values representing data points along the Y-axis.
+            zdata (list): A list of numerical values representing data points along the Z-axis.
+
+        Methods:
+            __repr__(self): Returns a string representation of the XyzDataFile object.
+        """
     def __init__():
-        self.filename = filename
-        self.type_of_file = type_of_file
-        self.xdata = xdata
-        self.ydata = ydata
-        self.zdata = zdata
-
-    def open_datafile(file):
-        with open(file) as inputfile:
-            #Fügt den filenamen als Attribut self.filename hinzu.add()
-            #Erste Zeile = self.type
-
+        self.filename = str(filename)
+        self.type_of_file = str(type_of_file)
+        self.x_var = str(x_var)
+        self.y_var = str(y_var)
+        self.z_var = str(z_var)
+        self.x_unit = str(x_unit)
+        self.y_unit = str(y_unit)
+        self.z_unit = str(z_unit)
+        self.xdata = list(xdata)
+        self.ydata = list(ydata)
+        self.zdata = list(zdata)
     def __repr__(self):
-        return (
-            self.__class__.__name__ + f"(id={self.id!r}, name={self.name!r}, admin={self.admin!r})"
-        )    def __eq__(self, other):
-        if other.__class__ is self.__class__:
-            return (self.id, self.name, self.admin) == (
-                other.id,
-                other.name,
-                other.admin,
-            )
-        return NotImplemented
+        return f"XyzDataFile(filename='{self.filename}', type_of_file='{self.type_of_file}', " \
+                f"x_var='{self.x_var}', y_var='{self.y_var}', z_var='{self.z_var}', " \
+                f"x_unit='{self.x_unit}', y_unit='{self.y_unit}', z_unit='{self.z_unit}', " \
+                f"xdata={self.xdata}, ydata={self.ydata}, zdata={self.zdata})"
 
+    # Setter methods
+    def set_filename(self, filename):
+        self.filename = str(filename)
 
-def open_mt_volav_file():
-    pass
+    def set_type_of_file(self, type_of_file):
+        self.type_of_file = str(type_of_file)
 
-def open_vapor_volume_rt_file():
-    pass
+    def set_x_var(self, x_var):
+        self.x_var = str(x_var)
+
+    def set_y_var(self, y_var):
+        self.y_var = str(y_var)
+
+    def set_z_var(self, z_var):
+        self.z_var = str(z_var)
+
+    def set_x_unit(self, x_unit):
+        self.x_unit = str(x_unit)
+
+    def set_y_unit(self, y_unit):
+        self.y_unit = str(y_unit)
+
+    def set_z_unit(self, z_unit):
+        self.z_unit = str(z_unit)
+
+    def set_xdata(self, xdata):
+        self.xdata = list(xdata)
+
+    def set_ydata(self, ydata):
+        self.ydata = list(ydata)
+
+    def set_zdata(self, zdata):
+        self.zdata = list(zdata)
+
+    # Example usage
+
+class OUfile_Parser(XyzDataFile):
+    def __init__(self, filename, type_of_file, x_var, y_var, z_var, x_unit, y_unit, z_unit, xdata, ydata, zdata):
+        super().__init__(filename, type_of_file, x_var, y_var, z_var, x_unit, y_unit, z_unit, xdata, ydata, zdata)
+
+    def set_filename(self, file_path):
+        self.filename = os.path.basename(file_path)
+
+    def read_datafile(self, filepath):
+        with open(filepath, "r") as file:
+            lines = file.readlines()
+            line_number = 0
+            for line in lines:  # Use lines instead of file for iteration
+                if line_number == 0:
+                    # Remove quotes from the type_of_file
+                    self.type_of_file = line.strip()[1:-1]
+                elif line_number == 2:
+                    valuenames = re.findall(r'"(.*?)"', line)
+                    self.x_var = valuenames[0]
+                    self.y_var = valuenames[1]
+                    self.z_var = valuenames[2]
+                else:
+                    xyzdata = line.split()
+                    self.xdata.append(float(xyzdata[0]))
+                    self.ydata.append(float(xyzdata[1]))
+                    self.zdata.append(float(xyzdata[2]))
+                line_number += 1
 
 def extract_peaks(x_data, y_data, threshold=0):
     # Finden der Peaks mithilfe von scipy.signal.find_peaks
@@ -123,7 +218,6 @@ def interplot_xy_values(title, xLabel, yLabel, x_data, y_data, peaks):
 
     fig = go.Figure(data=[line_trace, peaks_trace], layout=layout)
     fig.show()
-
 
 
 #================ TESTING SECTION ============================================================================
