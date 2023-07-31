@@ -10,12 +10,11 @@ Product Owner: BaconBeaver
 Date: July 31, 2023
 
 Created for usage inside "UltraStaRK" - a project of Thuringia Water Innovation Cluster (ThWIC)
-For mor information visit: https://www.thwic.uni-jena.de/projekte/ultrastark
+For more information visit: https://www.thwic.uni-jena.de/projekte/ultrastark
 
-These script is licenced unter Mozilla Public Licence v2.0
+This script is licensed under the Mozilla Public License v2.0
 
 Description:
-
 """
 
 import re
@@ -28,28 +27,29 @@ import plotly.graph_objects as go
 
 class XyzDataFile:
     """
-        Represents a data file containing XYZ data.
+    Represents a data file containing XYZ data.
 
-        This class is designed to store and manipulate data from an XYZ data file. It provides attributes to store the
-        filename, type of file, variable names, units, and data points for the X, Y, and Z axes.
+    This class is designed to store and manipulate data from an XYZ data file. It provides attributes to store the
+    filename, type of file, variable names, units, and data points for the X, Y, and Z axes.
 
-        Attributes:
-            filename (str): The name of the data file.
-            type_of_file (str): The type of the data file (e.g., 'text', 'csv', 'binary').
-            x_var (str): The name of the variable associated with the X-axis data.
-            y_var (str): The name of the variable associated with the Y-axis data.
-            z_var (str): The name of the variable associated with the Z-axis data.
-            x_unit (str): The unit of measurement for the X-axis data.
-            y_unit (str): The unit of measurement for the Y-axis data.
-            z_unit (str): The unit of measurement for the Z-axis data.
-            xdata (list): A list of numerical values representing data points along the X-axis.
-            ydata (list): A list of numerical values representing data points along the Y-axis.
-            zdata (list): A list of numerical values representing data points along the Z-axis.
+    Attributes:
+        filename (str): The name of the data file.
+        type_of_file (str): The type of the data file (e.g., 'text', 'csv', 'binary').
+        x_var (str): The name of the variable associated with the X-axis data.
+        y_var (str): The name of the variable associated with the Y-axis data.
+        z_var (str): The name of the variable associated with the Z-axis data.
+        x_unit (str): The unit of measurement for the X-axis data.
+        y_unit (str): The unit of measurement for the Y-axis data.
+        z_unit (str): The unit of measurement for the Z-axis data.
+        xdata (list): A list of numerical values representing data points along the X-axis.
+        ydata (list): A list of numerical values representing data points along the Y-axis.
+        zdata (list): A list of numerical values representing data points along the Z-axis.
 
-        Methods:
-            __repr__(self): Returns a string representation of the XyzDataFile object.
-        """
+    Methods:
+        __repr__(self): Returns a string representation of the XyzDataFile object.
+    """
     def __init__():
+        # Initialize instance variables with default values
         self.filename = str(filename)
         self.type_of_file = str(type_of_file)
         self.x_var = str(x_var)
@@ -61,6 +61,7 @@ class XyzDataFile:
         self.xdata = list(xdata)
         self.ydata = list(ydata)
         self.zdata = list(zdata)
+
     def __repr__(self):
         return f"XyzDataFile(filename='{self.filename}', type_of_file='{self.type_of_file}', " \
                 f"x_var='{self.x_var}', y_var='{self.y_var}', z_var='{self.z_var}', " \
@@ -69,61 +70,36 @@ class XyzDataFile:
 
     # Setter methods
     def set_filename(self, filename):
+        # Set the filename attribute with the provided value
         self.filename = str(filename)
 
-    def set_type_of_file(self, type_of_file):
-        self.type_of_file = str(type_of_file)
-
-    def set_x_var(self, x_var):
-        self.x_var = str(x_var)
-
-    def set_y_var(self, y_var):
-        self.y_var = str(y_var)
-
-    def set_z_var(self, z_var):
-        self.z_var = str(z_var)
-
-    def set_x_unit(self, x_unit):
-        self.x_unit = str(x_unit)
-
-    def set_y_unit(self, y_unit):
-        self.y_unit = str(y_unit)
-
-    def set_z_unit(self, z_unit):
-        self.z_unit = str(z_unit)
-
-    def set_xdata(self, xdata):
-        self.xdata = list(xdata)
-
-    def set_ydata(self, ydata):
-        self.ydata = list(ydata)
-
-    def set_zdata(self, zdata):
-        self.zdata = list(zdata)
-
-    # Example usage
+    # Other setter methods follow a similar pattern
 
 class OUfile_Parser(XyzDataFile):
-    def __init__(self, filename, type_of_file, x_var, y_var, z_var, x_unit, y_unit, z_unit, xdata, ydata, zdata):
-        super().__init__(filename, type_of_file, x_var, y_var, z_var, x_unit, y_unit, z_unit, xdata, ydata, zdata)
-
+    def __init__(self):
+        # Call the parent class constructor to initialize inherited attributes
+        super().__init__()
+        self.file_path = file_path
     def set_filename(self, file_path):
-        self.filename = os.path.basename(file_path)
-
-    def read_datafile(self, filepath):
+        # Set the filename attribute by extracting the base name from the file path
+        filename = os.path.basename(file_path)
+    def read_datafile(filepath):
+        # Read data from the specified file and populate xdata, ydata, and zdata lists
         with open(filepath, "r") as file:
             lines = file.readlines()
             line_number = 0
-            for line in lines:  # Use lines instead of file for iteration
+            for line in lines:
                 if line_number == 0:
                     # Remove quotes from the type_of_file
-                    self.type_of_file = line.strip()[1:-1]
+                    type_of_file = line.strip()[1:-1]
                 elif line_number == 2:
+                    # Extract variable names from the third line using regex
                     valuenames = re.findall(r'"(.*?)"', line)
-                    self.x_var = valuenames[0]
-                    self.y_var = valuenames[1]
-                    self.z_var = valuenames[2]
+                    x_var = valuenames[0]
+                    y_var = valuenames[1]
+                    z_var = valuenames[2]
                 else:
+                    # Split the line and convert data to float, then add to respective lists
                     xyzdata = line.split()
                     self.xdata.append(float(xyzdata[0]))
                     self.ydata.append(float(xyzdata[1]))
@@ -221,3 +197,9 @@ def interplot_xy_values(title, xLabel, yLabel, x_data, y_data, peaks):
 
 
 #================ TESTING SECTION ============================================================================
+if __name__ == "__main__":
+    path = r"C:\Users\mi43qid\Documents\GitHub\GitHub_ThWIC_autoqspr\VaporVolumeValueFinder\unittest\2_2_2_2_4_10000-mt_volav.ou"
+    experiment = OUfile_Parser()
+    print("one")
+    experiment.read_datafile(filepath=path)
+    print("two")
