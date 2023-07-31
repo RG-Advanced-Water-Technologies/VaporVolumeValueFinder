@@ -3,6 +3,38 @@ import matplotlib.pyplot as plt
 from scipy.signal import find_peaks
 import plotly.graph_objects as go
 
+class xyDataFile:
+    def __init__():
+        self.filename = filename
+        self.type_of_file = type_of_file
+        self.xdata = xdata
+        self.ydata = ydata
+        self.zdata = zdata
+
+    def open_datafile(file):
+        with open(file) as inputfile:
+            #Fügt den filenamen als Attribut self.filename hinzu.add()
+            #Erste Zeile = self.type
+
+    def __repr__(self):
+        return (
+            self.__class__.__name__ + f"(id={self.id!r}, name={self.name!r}, admin={self.admin!r})"
+        )    def __eq__(self, other):
+        if other.__class__ is self.__class__:
+            return (self.id, self.name, self.admin) == (
+                other.id,
+                other.name,
+                other.admin,
+            )
+        return NotImplemented
+
+
+def open_mt_volav_file():
+    pass
+
+def open_vapor_volume_rt_file():
+    pass
+
 def extract_peaks(x_data, y_data, threshold=0):
     # Finden der Peaks mithilfe von scipy.signal.find_peaks
     peaks, _ = find_peaks(y_data, height=threshold)
@@ -95,22 +127,3 @@ def interplot_xy_values(title, xLabel, yLabel, x_data, y_data, peaks):
 
 
 #================ TESTING SECTION ============================================================================
-
-# Ihre kontinuierlichen Messdaten (x- und y-Werte)
-x_data = np.array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46])
-y_data = np.array([0, 0, 1, 3, 16, 3, 1, 0, 0, 2,0, 0, 1, 3, 6, 3, 1, 0, 0, 2,0, 0, 1, 3, 6, 3, 1, 0, 0, 2,0, 0, 1, 3, 6, 3, 1, 0, 0, 2,3,2,1,0,0,0])
-
-# Extrahieren der Peaks
-peaks = extract_peaks(x_data, y_data, threshold=0)
-
-# Ausgabe der Peaks
-print("Peaks:", peaks)
-
-mean_y = calculate_mean_y(peaks)
-filtered_peaks = remove_outliers(peaks)
-print(filtered_peaks)
-
-interplot_xy_values(title="Testdiagramm",xLabel="x",yLabel="y",x_data=x_data,y_data=y_data,peaks=peaks)
-
-
-print("Mittelwert der y-Werte:", mean_y)
