@@ -1,4 +1,3 @@
-@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.signal import find_peaks
@@ -6,37 +5,24 @@ import plotly.graph_objects as go
 
 def extract_peaks(x_data, y_data, threshold=0):
     # Finden der Peaks mithilfe von scipy.signal.find_peaks
-@ -11,24 +12,6 @@ def extract_peaks(x_data, y_data, threshold=0):
+    peaks, _ = find_peaks(y_data, height=threshold)
+
+    # Extrahieren der x- und y-Werte der Peakmaxima als Liste von Tupeln
+    peak_coordinates = [(x_data[peaks[i]], y_data[peaks[i]]) for i in range(len(peaks))]
 
     return peak_coordinates
-
-# Ihre kontinuierlichen Messdaten (x- und y-Werte)
-x_data = np.array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10,11,12,13,14,15,16,17,18,19,20])
-y_data = np.array([0, 0, 1, 3, 6, 3, 1, 0, 0, 2,0, 0, 1, 3, 6, 3, 1, 0, 0, 2,])
-
-# Extrahieren der Peaks
-peaks = extract_peaks(x_data, y_data, threshold=0)
-
-# Ausgabe der Peaks
-print("Peaks:", peaks)
-
-# Visualisierung der Daten und Peaks
-plt.plot(x_data, y_data, label='Messdaten')
-plt.plot(*zip(*peaks), 'ro', label='Peaks')
-plt.legend()
-plt.xlabel('x-Werte')
-plt.ylabel('y-Werte')
-plt.show()
 
 def calculate_mean_y(peaks):
     # Überprüfen, ob die Liste nicht leer ist, um Division durch Null zu vermeiden
     if not peaks:
-@ -40,9 +23,94 @@ def calculate_mean_y(peaks):
+        return None
+
+    # Berechnen des Mittelwerts der y-Werte
+    sum_y = sum(y for _, y in peaks)
+    mean_y = sum_y / len(peaks)
 
     return mean_y
 
-# Beispiel Peaks
-peaks = [(1, 5), (2, 7), (3, 3), (4, 9), (5, 6)]
 def is_outlier(y, mean_y, std_dev):
     outlier = abs(y - mean_y) > 2 * std_dev
     return outlier
@@ -57,6 +43,23 @@ def remove_outliers(peaks):
 
     return filtered_peaks
 
+def find_corresponding_mtvolav(filtered_peaks, new_x_data, new_y_data):
+    # Searches the corresponding y-Value in the mt_volav-File (mass-transfer-volume-average) for a given list of peak-tuples.
+    # Take the first two tuples from filtered_peaks
+    x_values_to_find = [x for x, _ in filtered_peaks[:2]]
+
+    # Find the corresponding y-values for the given x-values
+    corresponding_y_values = []
+    for x in x_values_to_find:
+        try:
+            index = new_x_data.index(x)
+            corresponding_y_values.append(new_y_data[index])
+        except ValueError:
+            # If x-value not found in the new_x_data, append None
+            corresponding_y_values.append(None)
+
+    return corresponding_y_values
+
 def plot_xy_values(title,xLabel,yLabel,x_data,y_data):
     plt.plot(x_data, y_data, label='Messdaten')
     plt.plot(*zip(*peaks), 'ro', label='Peaks')
@@ -71,6 +74,7 @@ def plot_xy_values(title,xLabel,yLabel,x_data,y_data):
     plt.xlabel(xLabel)
     plt.ylabel(yLabel)
     plt.show()
+
 
 def interplot_xy_values(title, xLabel, yLabel, x_data, y_data, peaks):
     # Create an interactive plot of the xy-data with peaks labeled inside the Webbrowser. Opens a new tab inside the browser.
@@ -120,7 +124,6 @@ peaks = extract_peaks(x_data, y_data, threshold=0)
 # Ausgabe der Peaks
 print("Peaks:", peaks)
 
-# Aufruf der Funktion und Ausgabe des Mittelwerts
 mean_y = calculate_mean_y(peaks)
 filtered_peaks = remove_outliers(peaks)
 print(filtered_peaks)
