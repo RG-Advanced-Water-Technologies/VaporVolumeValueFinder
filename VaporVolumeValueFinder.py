@@ -58,9 +58,9 @@ class XyzDataFile:
         self.x_unit = str(x_unit)
         self.y_unit = str(y_unit)
         self.z_unit = str(z_unit)
-        self.xdata = xdata
-        self.ydata = ydata
-        self.zdata = zdata
+        self.xdata = []
+        self.ydata = []
+        self.zdata = []
 
     def __repr__(self):
         return f"XyzDataFile(filename='{self.filename}', type_of_file='{self.type_of_file}', " \
@@ -149,7 +149,7 @@ def remove_outliers(peaks):
 
     return filtered_peaks
 
-def plot_xy_values(title,xLabel,yLabel,x_data,y_data):
+def plot_xy_values(title,xLabel,yLabel,x_data,y_data,peaks):
     plt.plot(x_data, y_data, label='Messdaten')
     plt.plot(*zip(*peaks), 'ro', label='Peaks')
 
