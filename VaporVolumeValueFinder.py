@@ -48,7 +48,7 @@ class XyzDataFile:
     Methods:
         __repr__(self): Returns a string representation of the XyzDataFile object.
     """
-    def __init__():
+    def __init__(self, filename=None,type_of_file=None,x_var=None,y_var=None,z_var=None,x_unit=None,y_unit=None,z_unit=None,xdata=None,ydata=None,zdata=None):
         # Initialize instance variables with default values
         self.filename = str(filename)
         self.type_of_file = str(type_of_file)
@@ -58,9 +58,9 @@ class XyzDataFile:
         self.x_unit = str(x_unit)
         self.y_unit = str(y_unit)
         self.z_unit = str(z_unit)
-        self.xdata = list(xdata)
-        self.ydata = list(ydata)
-        self.zdata = list(zdata)
+        self.xdata = []
+        self.ydata = []
+        self.zdata = []
 
     def __repr__(self):
         return f"XyzDataFile(filename='{self.filename}', type_of_file='{self.type_of_file}', " \
@@ -76,14 +76,14 @@ class XyzDataFile:
     # Other setter methods follow a similar pattern
 
 class OUfile_Parser(XyzDataFile):
-    def __init__(self):
+    def __init__(self,file_path=None):
         # Call the parent class constructor to initialize inherited attributes
         super().__init__()
         self.file_path = file_path
     def set_filename(self, file_path):
         # Set the filename attribute by extracting the base name from the file path
         filename = os.path.basename(file_path)
-    def read_datafile(filepath):
+    def read_datafile(self,filepath):
         # Read data from the specified file and populate xdata, ydata, and zdata lists
         with open(filepath, "r") as file:
             lines = file.readlines()
@@ -92,6 +92,8 @@ class OUfile_Parser(XyzDataFile):
                 if line_number == 0:
                     # Remove quotes from the type_of_file
                     type_of_file = line.strip()[1:-1]
+                elif line_number == 1:
+                    pass
                 elif line_number == 2:
                     # Extract variable names from the third line using regex
                     valuenames = re.findall(r'"(.*?)"', line)
@@ -100,10 +102,11 @@ class OUfile_Parser(XyzDataFile):
                     z_var = valuenames[2]
                 else:
                     # Split the line and convert data to float, then add to respective lists
-                    xyzdata = line.split()
-                    self.xdata.append(float(xyzdata[0]))
-                    self.ydata.append(float(xyzdata[1]))
-                    self.zdata.append(float(xyzdata[2]))
+                    xdata,ydata,zdata = line.split()
+                    #xyzdata = line.split()
+                    self.xdata.append(float(xdata))
+                    self.ydata.append(float(ydata))
+                    self.zdata.append(float(zdata))
                 line_number += 1
 
 def extract_peaks(x_data, y_data, threshold=0):
@@ -146,7 +149,7 @@ def remove_outliers(peaks):
 
     return filtered_peaks
 
-def plot_xy_values(title,xLabel,yLabel,x_data,y_data):
+def plot_xy_values(title,xLabel,yLabel,x_data,y_data,peaks):
     plt.plot(x_data, y_data, label='Messdaten')
     plt.plot(*zip(*peaks), 'ro', label='Peaks')
 
@@ -194,12 +197,3 @@ def interplot_xy_values(title, xLabel, yLabel, x_data, y_data, peaks):
 
     fig = go.Figure(data=[line_trace, peaks_trace], layout=layout)
     fig.show()
-
-
-#================ TESTING SECTION ============================================================================
-if __name__ == "__main__":
-    path = r"C:\Users\mi43qid\Documents\GitHub\GitHub_ThWIC_autoqspr\VaporVolumeValueFinder\unittest\2_2_2_2_4_10000-mt_volav.ou"
-    experiment = OUfile_Parser()
-    print("one")
-    experiment.read_datafile(filepath=path)
-    print("two")
