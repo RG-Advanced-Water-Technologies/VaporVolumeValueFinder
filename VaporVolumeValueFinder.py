@@ -197,17 +197,3 @@ def interplot_xy_values(title, xLabel, yLabel, x_data, y_data, peaks):
 
     fig = go.Figure(data=[line_trace, peaks_trace], layout=layout)
     fig.show()
-
-
-#================ TESTING SECTION ============================================================================
-if __name__ == "__main__":
-    path = r"C:\Users\mi43qid\Desktop\2_2_2_2_4_10000-mt_volav.txt"
-    experiment = OUfile_Parser()
-    print("one")
-    experiment.read_datafile(path)
-    #OUfile_Parser.read_datafile('C:/Users/Jan/Desktop/Simulation/Geometrien/fertig/2_2_2_2_1_10000-mt_volav-rfile.out')
-    #filepath = 'C:/Users/Jan/Desktop/Simulation/Geometrien/fertig/2_2_2_2_1_10000-mt_volav-rfile.out'
-    #oufile_parser = OUfile_Parser()
-    #oufile_parser.read_datafile(filepath)
-    print("two")
-    print(experiment)
