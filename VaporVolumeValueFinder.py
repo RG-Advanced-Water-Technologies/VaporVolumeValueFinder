@@ -201,7 +201,7 @@ def interplot_xy_values(title, xLabel, yLabel, x_data, y_data, peaks):
 
 #================ TESTING SECTION ============================================================================
 if __name__ == "__main__":
-    path = r"C:\Users\Jan\Desktop\Simulation\Geometrien\fertig\2_2_2_2_1_10000-mt_volav-rfile.out"
+    path = r"C:\Users\mi43qid\Desktop\2_2_2_2_4_10000-mt_volav.txt"
     experiment = OUfile_Parser()
     print("one")
     experiment.read_datafile(path)
@@ -210,3 +210,4 @@ if __name__ == "__main__":
     #oufile_parser = OUfile_Parser()
     #oufile_parser.read_datafile(filepath)
     print("two")
+    print(experiment)
