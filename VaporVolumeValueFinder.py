@@ -210,3 +210,20 @@ if __name__ == "__main__":
     #oufile_parser = OUfile_Parser()
     #oufile_parser.read_datafile(filepath)
     print("two")
+    print(experiment.xdata)
+    # Extrahieren der Peaks
+peaks = extract_peaks(x_data=experiment.xdata, y_data=experiment.ydata, threshold=0)
+
+print("three")
+
+# Ausgabe der Peaks
+print("Peaks:", peaks)
+
+mean_y = calculate_mean_y(peaks)
+filtered_peaks = remove_outliers(peaks)
+print(filtered_peaks)
+
+interplot_xy_values(title="Testdiagramm",xLabel="x",yLabel="y",x_data=experiment.xdata,y_data=experiment.ydata,peaks=peaks)
+
+
+print("Mittelwert der y-Werte:", mean_y)
