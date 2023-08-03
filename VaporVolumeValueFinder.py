@@ -111,7 +111,7 @@ class OUfile_Parser(XyzDataFile):
 
 def extract_peaks(x_data, y_data, threshold=0):
     # Finden der Peaks mithilfe von scipy.signal.find_peaks
-    peaks, _ = find_peaks(y_data, height=threshold)
+    peaks, _ = find_peaks(y_data, height=threshold, distance=500)
 
     # Extrahieren der x- und y-Werte der Peakmaxima als Liste von Tupeln
     peak_coordinates = [(x_data[peaks[i]], y_data[peaks[i]]) for i in range(len(peaks))]
@@ -216,10 +216,11 @@ print("three")
 
 # Ausgabe der Peaks
 print("Peaks:", peaks)
+print("four")
 
 mean_y = calculate_mean_y(peaks)
 filtered_peaks = remove_outliers(peaks)
-print(filtered_peaks)
+print("Filtered peaks:", filtered_peaks)
 
 interplot_xy_values(title="Testdiagramm",xLabel="x",yLabel="y",x_data=experiment.xdata,y_data=experiment.ydata,peaks=peaks)
 
