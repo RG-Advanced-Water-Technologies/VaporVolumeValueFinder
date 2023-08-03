@@ -130,7 +130,7 @@ def calculate_mean_y(peaks):
     return mean_y
 
 def is_outlier(y, mean_y, std_dev):
-    outlier = abs(y - mean_y) > 2 * std_dev
+    outlier = abs(y - mean_y) > 1 * std_dev
     return outlier
 
 def remove_outliers(peaks):
@@ -196,7 +196,6 @@ def interplot_xy_values(title, xLabel, yLabel, x_data, y_data, peaks):
     )
 
     fig = go.Figure(data=[line_trace, peaks_trace], layout=layout)
-    fig.show()
 
 
 #================ TESTING SECTION ============================================================================
@@ -210,7 +209,6 @@ if __name__ == "__main__":
     #oufile_parser = OUfile_Parser()
     #oufile_parser.read_datafile(filepath)
     print("two")
-    print(experiment.xdata)
     # Extrahieren der Peaks
 peaks = extract_peaks(x_data=experiment.xdata, y_data=experiment.ydata, threshold=0)
 
@@ -227,3 +225,4 @@ interplot_xy_values(title="Testdiagramm",xLabel="x",yLabel="y",x_data=experiment
 
 
 print("Mittelwert der y-Werte:", mean_y)
+
