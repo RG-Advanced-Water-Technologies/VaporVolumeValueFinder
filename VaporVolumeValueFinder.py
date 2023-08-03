@@ -25,6 +25,7 @@ import matplotlib.pyplot as plt
 from scipy.signal import find_peaks
 import plotly.graph_objects as go
 
+
 class XyzDataFile:
     """
     Represents a data file containing XYZ data.
@@ -149,7 +150,24 @@ def remove_outliers(peaks):
 
     return filtered_peaks
 
-def plot_xy_values(title,xLabel,yLabel,x_data,y_data,peaks):
+def find_corresponding_mtvolav(filtered_peaks, new_x_data, new_y_data):
+    # Searches the corresponding y-Value in the mt_volav-File (mass-transfer-volume-average) for a given list of peak-tuples.
+    # Take the first two tuples from filtered_peaks
+    x_values_to_find = [x for x, _ in filtered_peaks[:2]]
+
+    # Find the corresponding y-values for the given x-values
+    corresponding_y_values = []
+    for x in x_values_to_find:
+        try:
+            index = new_x_data.index(x)
+            corresponding_y_values.append(new_y_data[index])
+        except ValueError:
+            # If x-value not found in the new_x_data, append None
+            corresponding_y_values.append(None)
+
+    return corresponding_y_values
+
+def plot_xy_values(title,xLabel,yLabel,x_data,y_data):
     plt.plot(x_data, y_data, label='Messdaten')
     plt.plot(*zip(*peaks), 'ro', label='Peaks')
 
@@ -196,7 +214,7 @@ def interplot_xy_values(title, xLabel, yLabel, x_data, y_data, peaks):
     )
 
     fig = go.Figure(data=[line_trace, peaks_trace], layout=layout)
-
+    fig.show()
 
 #================ TESTING SECTION ============================================================================
 if __name__ == "__main__":
@@ -223,7 +241,6 @@ filtered_peaks = remove_outliers(peaks)
 print("Filtered peaks:", filtered_peaks)
 
 interplot_xy_values(title="Testdiagramm",xLabel="x",yLabel="y",x_data=experiment.xdata,y_data=experiment.ydata,peaks=peaks)
-
 
 print("Mittelwert der y-Werte:", mean_y)
 
