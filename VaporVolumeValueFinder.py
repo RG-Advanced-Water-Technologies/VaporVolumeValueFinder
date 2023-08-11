@@ -110,9 +110,76 @@ class OUfile_Parser(XyzDataFile):
                     self.zdata.append(float(zdata))
                 line_number += 1
 
+class XyzDataFile2:
+    """
+    Represents a second data file containing XYZ-2 data.
+
+    """
+    def __init__(self, filename2=None,type_of_file2=None,x_var2=None,y_var2=None,z_var2=None,x_unit2=None,y_unit2=None,z_unit2=None,xdata2=None,ydata2=None,zdata2=None):
+        # Initialize instance variables with default values
+        self.filename2 = str(filename2)
+        self.type_of_file2 = str(type_of_file2)
+        self.x_var2 = str(x_var2)
+        self.y_var2 = str(y_var2)
+        self.z_var2 = str(z_var2)
+        self.x_unit2 = str(x_unit2)
+        self.y_unit2 = str(y_unit2)
+        self.z_unit2 = str(z_unit2)
+        self.xdata2 = []
+        self.ydata2 = []
+        self.zdata2 = []
+
+    def __repr__(self):
+        return f"XyzDataFile(filename='{self.filename2}', type_of_file='{self.type_of_file2}', " \
+                f"x_var='{self.x_var2}', y_var='{self.y_var2}', z_var='{self.z_var2}', " \
+                f"x_unit='{self.x_unit2}', y_unit='{self.y_unit2}', z_unit='{self.z_unit2}', " \
+                f"xdata={self.xdata2}, ydata={self.ydata2}, zdata={self.zdata2})"
+
+    # Setter methods
+    def set_filename(self, filename2):
+        # Set the filename attribute with the provided value
+        self.filename2 = str(filename2)
+
+    # Other setter methods follow a similar pattern
+
+class OUfile_Parser2(XyzDataFile2):
+    def __init__(self,file_path2=None):
+        # Call the parent class constructor to initialize inherited attributes
+        super().__init__()
+        self.file_path2 = file_path2
+    def set_filename2(self, file_path2):
+        # Set the filename attribute by extracting the base name from the file path
+        filename = os.path.basename(file_path2)
+    def read_datafile2(self,filepath2):
+        # Read data from the specified file and populate xdata, ydata, and zdata lists
+        with open(filepath2, "r") as file:
+            lines = file.readlines()
+            line_number = 0
+            for line in lines:
+                if line_number == 0:
+                    # Remove quotes from the type_of_file
+                    type_of_file = line.strip()[1:-1]
+                elif line_number == 1:
+                    pass
+                elif line_number == 2:
+                    # Extract variable names from the third line using regex
+                    valuenames = re.findall(r'"(.*?)"', line)
+                    x_var2 = valuenames[0]
+                    y_var2 = valuenames[1]
+                    z_var2 = valuenames[2]
+                else:
+                    # Split the line and convert data to float, then add to respective lists
+                    xdata2,ydata2,zdata2 = line.split()
+                    #xyzdata = line.split()
+                    self.xdata2.append(float(xdata2))
+                    self.ydata2.append(float(ydata2))
+                    self.zdata2.append(float(zdata2))
+                line_number += 1
+
+
 def extract_peaks(x_data, y_data, threshold=0):
     # Finden der Peaks mithilfe von scipy.signal.find_peaks
-    peaks, _ = find_peaks(y_data, height=threshold, distance=500)
+    peaks, _ = find_peaks(y_data, height=threshold, distance=200)
 
     # Extrahieren der x- und y-Werte der Peakmaxima als Liste von Tupeln
     peak_coordinates = [(x_data[peaks[i]], y_data[peaks[i]]) for i in range(len(peaks))]
@@ -131,7 +198,7 @@ def calculate_mean_y(peaks):
     return mean_y
 
 def is_outlier(y, mean_y, std_dev):
-    outlier = abs(y - mean_y) > 1 * std_dev
+    outlier = abs(y - mean_y) > 0.2 * std_dev
     return outlier
 
 def remove_outliers(peaks):
@@ -150,7 +217,7 @@ def remove_outliers(peaks):
 
     return filtered_peaks
 
-def find_corresponding_mtvolav(filtered_peaks, new_x_data, new_y_data):
+def find_corresponding_mtvolav(filtered_peaks, x_data2, y_data2):
     # Searches the corresponding y-Value in the mt_volav-File (mass-transfer-volume-average) for a given list of peak-tuples.
     # Take the first two tuples from filtered_peaks
     x_values_to_find = [x for x, _ in filtered_peaks[:2]]
@@ -159,8 +226,8 @@ def find_corresponding_mtvolav(filtered_peaks, new_x_data, new_y_data):
     corresponding_y_values = []
     for x in x_values_to_find:
         try:
-            index = new_x_data.index(x)
-            corresponding_y_values.append(new_y_data[index])
+            index = x_data2.index(x)
+            corresponding_y_values.append(y_data2[index])
         except ValueError:
             # If x-value not found in the new_x_data, append None
             corresponding_y_values.append(None)
@@ -169,10 +236,10 @@ def find_corresponding_mtvolav(filtered_peaks, new_x_data, new_y_data):
 
 def plot_xy_values(title,xLabel,yLabel,x_data,y_data):
     plt.plot(x_data, y_data, label='Messdaten')
-    plt.plot(*zip(*peaks), 'ro', label='Peaks')
+    plt.plot(*zip(*filtered_peaks), 'ro', label='Peaks')
 
     # Labeln der Peaks mit Nummern und x-Werten
-    for i, (x_peak, y_peak) in enumerate(peaks):
+    for i, (x_peak, y_peak) in enumerate(filtered_peaks):
         plt.text(x_peak, y_peak, f"Peak {i+1}", fontsize=12, fontweight='bold', ha='center', va='bottom')
         plt.text(x_peak, y_peak - 0.5, f"x={x_peak}", fontsize=10, ha='center', va='top')
 
@@ -182,13 +249,13 @@ def plot_xy_values(title,xLabel,yLabel,x_data,y_data):
     plt.ylabel(yLabel)
     plt.show()
 
-def interplot_xy_values(title, xLabel, yLabel, x_data, y_data, peaks):
+def interplot_xy_values(title, xLabel, yLabel, x_data, y_data, filtered_peaks):
     # Create an interactive plot of the xy-data with peaks labeled inside the Webbrowser. Opens a new tab inside the browser.
     # Uses plotly as library.
     line_trace = go.Scatter(x=x_data, y=y_data, mode='lines+markers', name='Messdaten', line=dict(color='blue'))
 
     # Create a scatter plot for the peaks
-    peaks_x, peaks_y = zip(*peaks)
+    peaks_x, peaks_y = zip(*filtered_peaks)
     peaks_trace = go.Scatter(x=peaks_x, y=peaks_y, mode='markers', marker=dict(color='red', size=10), name='Peaks')
 
     # Labeling the peaks with numbers and x-values
@@ -203,7 +270,7 @@ def interplot_xy_values(title, xLabel, yLabel, x_data, y_data, peaks):
         ax=0,
         ay=-30,
         font=dict(size=12)
-    ) for i, (x_peak, y_peak) in enumerate(peaks)]
+    ) for i, (x_peak, y_peak) in enumerate(filtered_peaks)]
 
     layout = go.Layout(
         title=title,
@@ -218,7 +285,7 @@ def interplot_xy_values(title, xLabel, yLabel, x_data, y_data, peaks):
 
 #================ TESTING SECTION ============================================================================
 if __name__ == "__main__":
-    path = r"C:\Users\Jan\Desktop\Simulation\Geometrien\fertig\2_2_2_2_1_10000-mt_volav-rfile.out"
+    path = r"C:\Users\Jan\Desktop\Simulation\Geometrien\fertig\2_2_2_2_4_10000-mt_volav-rfile.out"
     experiment = OUfile_Parser()
     print("one")
     experiment.read_datafile(path)
@@ -227,20 +294,28 @@ if __name__ == "__main__":
     #oufile_parser = OUfile_Parser()
     #oufile_parser.read_datafile(filepath)
     print("two")
+    path2 = r"C:\Users\Jan\Desktop\Simulation\Geometrien\fertig\2_2_2_2_4_10000-vapor_volume-rfile.out"
+    experiment2 = OUfile_Parser2()
+    print("three")
+    experiment2.read_datafile2(path2)
+    print("sevenhalf")
     # Extrahieren der Peaks
 peaks = extract_peaks(x_data=experiment.xdata, y_data=experiment.ydata, threshold=0)
 
-print("three")
+print("four")
 
 # Ausgabe der Peaks
 print("Peaks:", peaks)
-print("four")
+print("five")
 
 mean_y = calculate_mean_y(peaks)
 filtered_peaks = remove_outliers(peaks)
 print("Filtered peaks:", filtered_peaks)
 
-interplot_xy_values(title="Testdiagramm",xLabel="x",yLabel="y",x_data=experiment.xdata,y_data=experiment.ydata,peaks=peaks)
+interplot_xy_values(title="Testdiagramm",xLabel="x",yLabel="y",x_data=experiment.xdata,y_data=experiment.ydata,filtered_peaks=filtered_peaks)
 
 print("Mittelwert der y-Werte:", mean_y)
 
+vapor_volume = find_corresponding_mtvolav(filtered_peaks, x_data2=experiment2.xdata2, y_data2=experiment2.ydata2)
+
+print("Vapor Volume:", vapor_volume)
