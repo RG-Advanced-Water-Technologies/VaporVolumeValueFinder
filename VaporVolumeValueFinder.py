@@ -177,10 +177,10 @@ class OUfile_Parser2(XyzDataFile2):
                 line_number += 1
 
 
-def extract_peaks(x_data, y_data, threshold=0):
+def extract_peaks(x_data, y_data,prominence_calc, threshold=0):
     # Finden der Peaks mithilfe von scipy.signal.find_peaks
-    peaks, _ = find_peaks(y_data, height=threshold, distance=200)
-
+    peaks, _ = find_peaks(y_data, height=threshold, distance=200,prominence=prominence_calc)
+   
     # Extrahieren der x- und y-Werte der Peakmaxima als Liste von Tupeln
     peak_coordinates = [(x_data[peaks[i]], y_data[peaks[i]]) for i in range(len(peaks))]
 
@@ -198,7 +198,7 @@ def calculate_mean_y(peaks):
     return mean_y
 
 def is_outlier(y, mean_y, std_dev):
-    outlier = abs(y - mean_y) > 0.2 * std_dev
+    outlier = abs(y - mean_y) > 1 * std_dev
     return outlier
 
 def remove_outliers(peaks):
@@ -287,28 +287,28 @@ def interplot_xy_values(title, xLabel, yLabel, x_data, y_data, filtered_peaks):
 if __name__ == "__main__":
     path = r"C:\Users\Jan\Desktop\Simulation\Geometrien\fertig\2_2_2_2_4_10000-mt_volav-rfile.out"
     experiment = OUfile_Parser()
-    print("one")
+    
     experiment.read_datafile(path)
     #OUfile_Parser.read_datafile('C:/Users/Jan/Desktop/Simulation/Geometrien/fertig/2_2_2_2_1_10000-mt_volav-rfile.out')
     #filepath = 'C:/Users/Jan/Desktop/Simulation/Geometrien/fertig/2_2_2_2_1_10000-mt_volav-rfile.out'
     #oufile_parser = OUfile_Parser()
     #oufile_parser.read_datafile(filepath)
-    print("two")
+    
     path2 = r"C:\Users\Jan\Desktop\Simulation\Geometrien\fertig\2_2_2_2_4_10000-vapor_volume-rfile.out"
     experiment2 = OUfile_Parser2()
-    print("three")
+    
     experiment2.read_datafile2(path2)
-    print("sevenhalf")
+    
     # Extrahieren der Peaks
-peaks = extract_peaks(x_data=experiment.xdata, y_data=experiment.ydata, threshold=0)
-
-print("four")
+peaks = extract_peaks(x_data=experiment.xdata, y_data=experiment.ydata,prominence_calc=None, threshold=0)
 
 # Ausgabe der Peaks
 print("Peaks:", peaks)
-print("five")
 
 mean_y = calculate_mean_y(peaks)
+prominence_calc=0.05*mean_y
+peaks = extract_peaks(x_data=experiment.xdata, y_data=experiment.ydata,prominence_calc=prominence_calc, threshold=0)
+
 filtered_peaks = remove_outliers(peaks)
 print("Filtered peaks:", filtered_peaks)
 
