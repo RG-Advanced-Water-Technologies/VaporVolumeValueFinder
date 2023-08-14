@@ -84,6 +84,7 @@ class OUfile_Parser(XyzDataFile):
     def set_filename(self, file_path):
         # Set the filename attribute by extracting the base name from the file path
         filename = os.path.basename(file_path)
+        return filename
     def read_datafile(self,filepath):
         # Read data from the specified file and populate xdata, ydata, and zdata lists
         with open(filepath, "r") as file:
@@ -149,7 +150,8 @@ class OUfile_Parser2(XyzDataFile2):
         self.file_path2 = file_path2
     def set_filename2(self, file_path2):
         # Set the filename attribute by extracting the base name from the file path
-        filename = os.path.basename(file_path2)
+        filename2 = os.path.basename(file_path2)
+        return filename2
     def read_datafile2(self,filepath2):
         # Read data from the specified file and populate xdata, ydata, and zdata lists
         with open(filepath2, "r") as file:
@@ -175,11 +177,12 @@ class OUfile_Parser2(XyzDataFile2):
                     self.ydata2.append(float(ydata2))
                     self.zdata2.append(float(zdata2))
                 line_number += 1
+                
 
 
-def extract_peaks(x_data, y_data,prominence_calc, threshold=0):
+def extract_peaks(x_data, y_data, threshold=0):
     # Finden der Peaks mithilfe von scipy.signal.find_peaks
-    peaks, _ = find_peaks(y_data, height=threshold, distance=200,prominence=prominence_calc)
+    peaks, _ = find_peaks(y_data, height=threshold, distance=150, width=20)
    
     # Extrahieren der x- und y-Werte der Peakmaxima als Liste von Tupeln
     peak_coordinates = [(x_data[peaks[i]], y_data[peaks[i]]) for i in range(len(peaks))]
@@ -198,7 +201,7 @@ def calculate_mean_y(peaks):
     return mean_y
 
 def is_outlier(y, mean_y, std_dev):
-    outlier = abs(y - mean_y) > 2 * std_dev
+    outlier = abs(y - mean_y) > 10 * std_dev
     return outlier
 
 def remove_outliers(peaks):
@@ -220,7 +223,7 @@ def remove_outliers(peaks):
 def find_corresponding_mtvolav(filtered_peaks, x_data2, y_data2):
     # Searches the corresponding y-Value in the mt_volav-File (mass-transfer-volume-average) for a given list of peak-tuples.
     # Take the first two tuples from filtered_peaks
-    x_values_to_find = [x for x, _ in filtered_peaks[:2]]
+    x_values_to_find = [x for x, _ in filtered_peaks[:20]]
 
     # Find the corresponding y-values for the given x-values
     corresponding_y_values = []
@@ -286,7 +289,7 @@ def interplot_xy_values(title, xLabel, yLabel, x_data, y_data, filtered_peaks):
 #================ TESTING SECTION ============================================================================
 if __name__ == "__main__":
     path = r"C:\Users\Jan\Desktop\Simulation\Geometrien\fertig\2_2_2_2_4_10000-mt_volav-rfile.out"
-    path = r"C:\Users\Jan\Desktop\Simulation\Geometrien\fertig\16_16_2_2_4_10000-mt_volav-rfile.out"
+    path = r"C:\Users\Jan\Desktop\Simulation\Geometrien\fertig\2_16_2_2_1-10000-mt_volav-rfile.out"
     experiment = OUfile_Parser()
     
     experiment.read_datafile(path)
@@ -296,25 +299,25 @@ if __name__ == "__main__":
     #oufile_parser.read_datafile(filepath)
     
     path2 = r"C:\Users\Jan\Desktop\Simulation\Geometrien\fertig\2_2_2_2_4_10000-vapor_volume-rfile.out"
-    path2 = r"C:\Users\Jan\Desktop\Simulation\Geometrien\fertig\16_16_2_2_4_10000-vapor_volume-rfile.out"
+    path2 = r"C:\Users\Jan\Desktop\Simulation\Geometrien\fertig\2_16_2_2_1-10000-vapor_volint-rfile.out"
     experiment2 = OUfile_Parser2()
     
     experiment2.read_datafile2(path2)
     
     # Extrahieren der Peaks
-peaks = extract_peaks(x_data=experiment.xdata, y_data=experiment.ydata,prominence_calc=None, threshold=0)
+peaks = extract_peaks(x_data=experiment.xdata, y_data=experiment.ydata, threshold=0)
 
 # Ausgabe der Peaks
 print("Peaks:", peaks)
 
 mean_y = calculate_mean_y(peaks)
-prominence_calc=0.1*mean_y
-peaks = extract_peaks(x_data=experiment.xdata, y_data=experiment.ydata,prominence_calc=prominence_calc, threshold=0)
+#prominence_calc=0*mean_y
+peaks = extract_peaks(x_data=experiment.xdata, y_data=experiment.ydata, threshold=0)
 
 filtered_peaks = remove_outliers(peaks)
 print("Filtered peaks:", filtered_peaks)
 
-interplot_xy_values(title="Testdiagramm",xLabel="x",yLabel="y",x_data=experiment.xdata,y_data=experiment.ydata,filtered_peaks=filtered_peaks)
+interplot_xy_values(title=experiment.set_filename (file_path=path),xLabel="x",yLabel="y",x_data=experiment.xdata,y_data=experiment.ydata,filtered_peaks=filtered_peaks)
 
 print("Mittelwert der y-Werte:", mean_y)
 
