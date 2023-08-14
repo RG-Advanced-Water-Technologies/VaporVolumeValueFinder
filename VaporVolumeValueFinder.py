@@ -198,7 +198,7 @@ def calculate_mean_y(peaks):
     return mean_y
 
 def is_outlier(y, mean_y, std_dev):
-    outlier = abs(y - mean_y) > 1 * std_dev
+    outlier = abs(y - mean_y) > 2 * std_dev
     return outlier
 
 def remove_outliers(peaks):
@@ -286,6 +286,7 @@ def interplot_xy_values(title, xLabel, yLabel, x_data, y_data, filtered_peaks):
 #================ TESTING SECTION ============================================================================
 if __name__ == "__main__":
     path = r"C:\Users\Jan\Desktop\Simulation\Geometrien\fertig\2_2_2_2_4_10000-mt_volav-rfile.out"
+    path = r"C:\Users\Jan\Desktop\Simulation\Geometrien\fertig\16_16_2_2_4_10000-mt_volav-rfile.out"
     experiment = OUfile_Parser()
     
     experiment.read_datafile(path)
@@ -295,6 +296,7 @@ if __name__ == "__main__":
     #oufile_parser.read_datafile(filepath)
     
     path2 = r"C:\Users\Jan\Desktop\Simulation\Geometrien\fertig\2_2_2_2_4_10000-vapor_volume-rfile.out"
+    path2 = r"C:\Users\Jan\Desktop\Simulation\Geometrien\fertig\16_16_2_2_4_10000-vapor_volume-rfile.out"
     experiment2 = OUfile_Parser2()
     
     experiment2.read_datafile2(path2)
@@ -306,7 +308,7 @@ peaks = extract_peaks(x_data=experiment.xdata, y_data=experiment.ydata,prominenc
 print("Peaks:", peaks)
 
 mean_y = calculate_mean_y(peaks)
-prominence_calc=0.05*mean_y
+prominence_calc=0.1*mean_y
 peaks = extract_peaks(x_data=experiment.xdata, y_data=experiment.ydata,prominence_calc=prominence_calc, threshold=0)
 
 filtered_peaks = remove_outliers(peaks)
